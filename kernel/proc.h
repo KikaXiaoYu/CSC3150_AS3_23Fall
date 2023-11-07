@@ -97,6 +97,19 @@ enum procstate
 // TODO: complete struct of VMA
 struct vma
 {
+    /* vma info */
+    int occupied;   // denote whether occupied(1) or not(0)
+    int addr_start; // starting address of vma
+    // struct file * p_file;
+
+    /* fetched arguments */
+    uint64 addr; // arg0, kernel chooses virtual address
+    int length;  // arg1, indicates how many bytes to map
+    int prot;    // arg2, indicates the mapped memory mode
+    int flags;   // arg3, the flags of mapping
+    int fd;      // arg4, file description
+    int offset;  // arg5, the starting offset in the file
+    struct file *pf;
 };
 
 // Per-process state

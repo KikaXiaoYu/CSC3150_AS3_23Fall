@@ -5,11 +5,11 @@ user/_mmaptest:     file format elf64-littleriscv
 Disassembly of section .text:
 
 0000000000000000 <err>:
+}
 
 char *testname = "???";
 
-void
-err(char *why)
+void err(char *why)
 {
        0:	1101                	addi	sp,sp,-32
        2:	ec06                	sd	ra,24(sp)
@@ -18,7 +18,7 @@ err(char *why)
        8:	e04a                	sd	s2,0(sp)
        a:	1000                	addi	s0,sp,32
        c:	84aa                	mv	s1,a0
-  printf("mmaptest: %s failed: %s, pid=%d\n", testname, why, getpid());
+    printf("mmaptest: %s failed: %s, pid=%d\n", testname, why, getpid());
        e:	00002917          	auipc	s2,0x2
       12:	ff293903          	ld	s2,-14(s2) # 2000 <testname>
       16:	00001097          	auipc	ra,0x1
@@ -30,76 +30,80 @@ err(char *why)
       28:	0cc50513          	addi	a0,a0,204 # 10f0 <malloc+0xea>
       2c:	00001097          	auipc	ra,0x1
       30:	f1c080e7          	jalr	-228(ra) # f48 <printf>
-  exit(1);
+    exit(1);
       34:	4505                	li	a0,1
       36:	00001097          	auipc	ra,0x1
       3a:	b8a080e7          	jalr	-1142(ra) # bc0 <exit>
 
 000000000000003e <_v1>:
+
 //
 // check the content of the two mapped pages.
 //
-void
-_v1(char *p)
+void _v1(char *p)
 {
       3e:	1141                	addi	sp,sp,-16
       40:	e406                	sd	ra,8(sp)
       42:	e022                	sd	s0,0(sp)
       44:	0800                	addi	s0,sp,16
       46:	4781                	li	a5,0
-  int i;
-  for (i = 0; i < PGSIZE*2; i++) {
-    if (i < PGSIZE + (PGSIZE/2)) {
+    int i;
+    for (i = 0; i < PGSIZE * 2; i++)
+    {
+        if (i < PGSIZE + (PGSIZE / 2))
       48:	6685                	lui	a3,0x1
       4a:	7ff68693          	addi	a3,a3,2047 # 17ff <digits+0x257>
-  for (i = 0; i < PGSIZE*2; i++) {
+    for (i = 0; i < PGSIZE * 2; i++)
       4e:	6889                	lui	a7,0x2
-      if (p[i] != 'A') {
+        {
+            if (p[i] != 'A')
       50:	04100813          	li	a6,65
       54:	a811                	j	68 <_v1+0x2a>
-        printf("mismatch at %d, wanted 'A', got 0x%x\n", i, p[i]);
-        err("v1 mismatch (1)");
-      }
-    } else {
-      if (p[i] != 0) {
+                err("v1 mismatch (1)");
+            }
+        }
+        else
+        {
+            if (p[i] != 0)
       56:	00f50633          	add	a2,a0,a5
       5a:	00064603          	lbu	a2,0(a2)
       5e:	e221                	bnez	a2,9e <_v1+0x60>
-  for (i = 0; i < PGSIZE*2; i++) {
+    for (i = 0; i < PGSIZE * 2; i++)
       60:	2705                	addiw	a4,a4,1
       62:	05175e63          	bge	a4,a7,be <_v1+0x80>
       66:	0785                	addi	a5,a5,1
       68:	0007871b          	sext.w	a4,a5
       6c:	85ba                	mv	a1,a4
-    if (i < PGSIZE + (PGSIZE/2)) {
+        if (i < PGSIZE + (PGSIZE / 2))
       6e:	fee6c4e3          	blt	a3,a4,56 <_v1+0x18>
-      if (p[i] != 'A') {
+            if (p[i] != 'A')
       72:	00f50733          	add	a4,a0,a5
       76:	00074603          	lbu	a2,0(a4)
       7a:	ff0606e3          	beq	a2,a6,66 <_v1+0x28>
-        printf("mismatch at %d, wanted 'A', got 0x%x\n", i, p[i]);
+                printf("mismatch at %d, wanted 'A', got 0x%x\n", i, p[i]);
       7e:	00001517          	auipc	a0,0x1
       82:	09a50513          	addi	a0,a0,154 # 1118 <malloc+0x112>
       86:	00001097          	auipc	ra,0x1
       8a:	ec2080e7          	jalr	-318(ra) # f48 <printf>
-        err("v1 mismatch (1)");
+                err("v1 mismatch (1)");
       8e:	00001517          	auipc	a0,0x1
       92:	0b250513          	addi	a0,a0,178 # 1140 <malloc+0x13a>
       96:	00000097          	auipc	ra,0x0
       9a:	f6a080e7          	jalr	-150(ra) # 0 <err>
-        printf("mismatch at %d, wanted zero, got 0x%x\n", i, p[i]);
+            {
+                printf("mismatch at %d, wanted zero, got 0x%x\n", i, p[i]);
       9e:	00001517          	auipc	a0,0x1
       a2:	0b250513          	addi	a0,a0,178 # 1150 <malloc+0x14a>
       a6:	00001097          	auipc	ra,0x1
       aa:	ea2080e7          	jalr	-350(ra) # f48 <printf>
-        err("v1 mismatch (2)");
+                err("v1 mismatch (2)");
       ae:	00001517          	auipc	a0,0x1
       b2:	0ca50513          	addi	a0,a0,202 # 1178 <malloc+0x172>
       b6:	00000097          	auipc	ra,0x0
       ba:	f4a080e7          	jalr	-182(ra) # 0 <err>
-      }
+            }
+        }
     }
-  }
 }
       be:	60a2                	ld	ra,8(sp)
       c0:	6402                	ld	s0,0(sp)
@@ -107,11 +111,11 @@ _v1(char *p)
       c4:	8082                	ret
 
 00000000000000c6 <makefile>:
+//
 // create a file to be mapped, containing
 // 1.5 pages of 'A' and half a page of zeros.
 //
-void
-makefile(const char *f)
+void makefile(const char *f)
 {
       c6:	7179                	addi	sp,sp,-48
       c8:	f406                	sd	ra,40(sp)
@@ -121,23 +125,23 @@ makefile(const char *f)
       d0:	e44e                	sd	s3,8(sp)
       d2:	1800                	addi	s0,sp,48
       d4:	84aa                	mv	s1,a0
-  int i;
-  int n = PGSIZE/BSIZE;
+    int i;
+    int n = PGSIZE / BSIZE;
 
-  unlink(f);
+    unlink(f);
       d6:	00001097          	auipc	ra,0x1
       da:	b3a080e7          	jalr	-1222(ra) # c10 <unlink>
-  int fd = open(f, O_WRONLY | O_CREATE);
+    int fd = open(f, O_WRONLY | O_CREATE);
       de:	20100593          	li	a1,513
       e2:	8526                	mv	a0,s1
       e4:	00001097          	auipc	ra,0x1
       e8:	b1c080e7          	jalr	-1252(ra) # c00 <open>
-  if (fd == -1)
+    if (fd == -1)
       ec:	57fd                	li	a5,-1
       ee:	06f50163          	beq	a0,a5,150 <makefile+0x8a>
       f2:	892a                	mv	s2,a0
-    err("open");
-  memset(buf, 'A', BSIZE);
+        err("open");
+    memset(buf, 'A', BSIZE);
       f4:	40000613          	li	a2,1024
       f8:	04100593          	li	a1,65
       fc:	00002517          	auipc	a0,0x2
@@ -145,9 +149,10 @@ makefile(const char *f)
      104:	00001097          	auipc	ra,0x1
      108:	8b8080e7          	jalr	-1864(ra) # 9bc <memset>
      10c:	4499                	li	s1,6
-  // write 1.5 page
-  for (i = 0; i < n + n/2; i++) {
-    if (write(fd, buf, BSIZE) != BSIZE)
+    // write 1.5 page
+    for (i = 0; i < n + n / 2; i++)
+    {
+        if (write(fd, buf, BSIZE) != BSIZE)
      10e:	00002997          	auipc	s3,0x2
      112:	f1298993          	addi	s3,s3,-238 # 2020 <buf>
      116:	40000613          	li	a2,1024
@@ -157,18 +162,18 @@ makefile(const char *f)
      122:	ac2080e7          	jalr	-1342(ra) # be0 <write>
      126:	40000793          	li	a5,1024
      12a:	02f51b63          	bne	a0,a5,160 <makefile+0x9a>
-  for (i = 0; i < n + n/2; i++) {
+    for (i = 0; i < n + n / 2; i++)
      12e:	34fd                	addiw	s1,s1,-1
      130:	f0fd                	bnez	s1,116 <makefile+0x50>
-      err("write 0 makefile");
-  }
-  if (close(fd) == -1)
+            err("write 0 makefile");
+    }
+    if (close(fd) == -1)
      132:	854a                	mv	a0,s2
      134:	00001097          	auipc	ra,0x1
      138:	ab4080e7          	jalr	-1356(ra) # be8 <close>
      13c:	57fd                	li	a5,-1
      13e:	02f50963          	beq	a0,a5,170 <makefile+0xaa>
-    err("close");
+        err("close");
 }
      142:	70a2                	ld	ra,40(sp)
      144:	7402                	ld	s0,32(sp)
@@ -177,17 +182,17 @@ makefile(const char *f)
      14a:	69a2                	ld	s3,8(sp)
      14c:	6145                	addi	sp,sp,48
      14e:	8082                	ret
-    err("open");
+        err("open");
      150:	00001517          	auipc	a0,0x1
      154:	03850513          	addi	a0,a0,56 # 1188 <malloc+0x182>
      158:	00000097          	auipc	ra,0x0
      15c:	ea8080e7          	jalr	-344(ra) # 0 <err>
-      err("write 0 makefile");
+            err("write 0 makefile");
      160:	00001517          	auipc	a0,0x1
      164:	03050513          	addi	a0,a0,48 # 1190 <malloc+0x18a>
      168:	00000097          	auipc	ra,0x0
      16c:	e98080e7          	jalr	-360(ra) # 0 <err>
-    err("close");
+        err("close");
      170:	00001517          	auipc	a0,0x1
      174:	03850513          	addi	a0,a0,56 # 11a8 <malloc+0x1a2>
      178:	00000097          	auipc	ra,0x0
@@ -195,8 +200,7 @@ makefile(const char *f)
 
 0000000000000180 <mmap_test>:
 
-void
-mmap_test(void)
+void mmap_test(void)
 {
      180:	7139                	addi	sp,sp,-64
      182:	fc06                	sd	ra,56(sp)
@@ -206,30 +210,30 @@ mmap_test(void)
      18a:	ec4e                	sd	s3,24(sp)
      18c:	e852                	sd	s4,16(sp)
      18e:	0080                	addi	s0,sp,64
-  int fd;
-  int i;
-  const char * const f = "mmap.dur";
-  printf("mmap_test starting\n");
+    int fd;
+    int i;
+    const char *const f = "mmap.dur";
+    printf("mmap_test starting\n");
      190:	00001517          	auipc	a0,0x1
      194:	02050513          	addi	a0,a0,32 # 11b0 <malloc+0x1aa>
      198:	00001097          	auipc	ra,0x1
      19c:	db0080e7          	jalr	-592(ra) # f48 <printf>
-  testname = "mmap_test";
+    testname = "mmap_test";
      1a0:	00001797          	auipc	a5,0x1
      1a4:	02878793          	addi	a5,a5,40 # 11c8 <malloc+0x1c2>
      1a8:	00002717          	auipc	a4,0x2
      1ac:	e4f73c23          	sd	a5,-424(a4) # 2000 <testname>
-  //
-  // create a file with known content, map it into memory, check that
-  // the mapped memory has the same bytes as originally written to the
-  // file.
-  //
-  makefile(f);
+    //
+    // create a file with known content, map it into memory, check that
+    // the mapped memory has the same bytes as originally written to the
+    // file.
+    //
+    makefile(f);
      1b0:	00001517          	auipc	a0,0x1
      1b4:	02850513          	addi	a0,a0,40 # 11d8 <malloc+0x1d2>
      1b8:	00000097          	auipc	ra,0x0
      1bc:	f0e080e7          	jalr	-242(ra) # c6 <makefile>
-  if ((fd = open(f, O_RDONLY)) == -1)
+    if ((fd = open(f, O_RDONLY)) == -1)
      1c0:	4581                	li	a1,0
      1c2:	00001517          	auipc	a0,0x1
      1c6:	01650513          	addi	a0,a0,22 # 11d8 <malloc+0x1d2>
@@ -238,19 +242,19 @@ mmap_test(void)
      1d2:	57fd                	li	a5,-1
      1d4:	3ef50663          	beq	a0,a5,5c0 <mmap_test+0x440>
      1d8:	892a                	mv	s2,a0
-    err("open");
+        err("open");
 
-  printf("test mmap f\n");
+    printf("test mmap f\n");
      1da:	00001517          	auipc	a0,0x1
      1de:	00e50513          	addi	a0,a0,14 # 11e8 <malloc+0x1e2>
      1e2:	00001097          	auipc	ra,0x1
      1e6:	d66080e7          	jalr	-666(ra) # f48 <printf>
-  // same file (of course in this case updates are prohibited
-  // due to PROT_READ). the fifth argument is the file descriptor
-  // of the file to be mapped. the last argument is the starting
-  // offset in the file.
-  //
-  char *p = mmap(0, PGSIZE*2, PROT_READ, MAP_PRIVATE, fd, 0);
+    // same file (of course in this case updates are prohibited
+    // due to PROT_READ). the fifth argument is the file descriptor
+    // of the file to be mapped. the last argument is the starting
+    // offset in the file.
+    //
+    char *p = mmap(0, PGSIZE * 2, PROT_READ, MAP_PRIVATE, fd, 0);
      1ea:	4781                	li	a5,0
      1ec:	874a                	mv	a4,s2
      1ee:	4689                	li	a3,2
@@ -260,36 +264,36 @@ mmap_test(void)
      1f6:	00001097          	auipc	ra,0x1
      1fa:	a6a080e7          	jalr	-1430(ra) # c60 <mmap>
      1fe:	84aa                	mv	s1,a0
-  if (p == MAP_FAILED)
+    if (p == MAP_FAILED)
      200:	57fd                	li	a5,-1
      202:	3cf50763          	beq	a0,a5,5d0 <mmap_test+0x450>
-    err("mmap (1)");
-  _v1(p);
+        err("mmap (1)");
+    _v1(p);
      206:	00000097          	auipc	ra,0x0
      20a:	e38080e7          	jalr	-456(ra) # 3e <_v1>
-  if (munmap(p, PGSIZE*2) == -1)
+    if (munmap(p, PGSIZE * 2) == -1)
      20e:	6589                	lui	a1,0x2
      210:	8526                	mv	a0,s1
      212:	00001097          	auipc	ra,0x1
      216:	a56080e7          	jalr	-1450(ra) # c68 <munmap>
      21a:	57fd                	li	a5,-1
      21c:	3cf50263          	beq	a0,a5,5e0 <mmap_test+0x460>
-    err("munmap (1)");
+        err("munmap (1)");
 
-  printf("test mmap f: OK\n");
+    printf("test mmap f: OK\n");
      220:	00001517          	auipc	a0,0x1
      224:	ff850513          	addi	a0,a0,-8 # 1218 <malloc+0x212>
      228:	00001097          	auipc	ra,0x1
      22c:	d20080e7          	jalr	-736(ra) # f48 <printf>
-    
-  printf("test mmap private\n");
+
+    printf("test mmap private\n");
      230:	00001517          	auipc	a0,0x1
      234:	00050513          	mv	a0,a0
      238:	00001097          	auipc	ra,0x1
      23c:	d10080e7          	jalr	-752(ra) # f48 <printf>
-  // should be able to map file opened read-only with private writable
-  // mapping
-  p = mmap(0, PGSIZE*2, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+    // should be able to map file opened read-only with private writable
+    // mapping
+    p = mmap(0, PGSIZE * 2, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
      240:	4781                	li	a5,0
      242:	874a                	mv	a4,s2
      244:	4689                	li	a3,2
@@ -299,55 +303,55 @@ mmap_test(void)
      24c:	00001097          	auipc	ra,0x1
      250:	a14080e7          	jalr	-1516(ra) # c60 <mmap>
      254:	84aa                	mv	s1,a0
-  if (p == MAP_FAILED)
+    if (p == MAP_FAILED)
      256:	57fd                	li	a5,-1
      258:	38f50c63          	beq	a0,a5,5f0 <mmap_test+0x470>
-    err("mmap (2)");
-  if (close(fd) == -1)
+        err("mmap (2)");
+    if (close(fd) == -1)
      25c:	854a                	mv	a0,s2
      25e:	00001097          	auipc	ra,0x1
      262:	98a080e7          	jalr	-1654(ra) # be8 <close>
      266:	57fd                	li	a5,-1
      268:	38f50c63          	beq	a0,a5,600 <mmap_test+0x480>
-    err("close");
-  _v1(p);
+        err("close");
+    _v1(p);
      26c:	8526                	mv	a0,s1
      26e:	00000097          	auipc	ra,0x0
      272:	dd0080e7          	jalr	-560(ra) # 3e <_v1>
-  for (i = 0; i < PGSIZE*2; i++)
+    for (i = 0; i < PGSIZE * 2; i++)
      276:	87a6                	mv	a5,s1
      278:	6709                	lui	a4,0x2
      27a:	9726                	add	a4,a4,s1
-    p[i] = 'Z';
+        p[i] = 'Z';
      27c:	05a00693          	li	a3,90
      280:	00d78023          	sb	a3,0(a5)
-  for (i = 0; i < PGSIZE*2; i++)
+    for (i = 0; i < PGSIZE * 2; i++)
      284:	0785                	addi	a5,a5,1
      286:	fef71de3          	bne	a4,a5,280 <mmap_test+0x100>
-  if (munmap(p, PGSIZE*2) == -1)
+    if (munmap(p, PGSIZE * 2) == -1)
      28a:	6589                	lui	a1,0x2
      28c:	8526                	mv	a0,s1
      28e:	00001097          	auipc	ra,0x1
      292:	9da080e7          	jalr	-1574(ra) # c68 <munmap>
      296:	57fd                	li	a5,-1
      298:	36f50c63          	beq	a0,a5,610 <mmap_test+0x490>
-    err("munmap (2)");
+        err("munmap (2)");
 
-  printf("test mmap private: OK\n");
+    printf("test mmap private: OK\n");
      29c:	00001517          	auipc	a0,0x1
      2a0:	fcc50513          	addi	a0,a0,-52 # 1268 <malloc+0x262>
      2a4:	00001097          	auipc	ra,0x1
      2a8:	ca4080e7          	jalr	-860(ra) # f48 <printf>
-    
-  printf("test mmap read-only\n");
+
+    printf("test mmap read-only\n");
      2ac:	00001517          	auipc	a0,0x1
      2b0:	fd450513          	addi	a0,a0,-44 # 1280 <malloc+0x27a>
      2b4:	00001097          	auipc	ra,0x1
      2b8:	c94080e7          	jalr	-876(ra) # f48 <printf>
-    
-  // check that mmap doesn't allow read/write mapping of a
-  // file opened read-only.
-  if ((fd = open(f, O_RDONLY)) == -1)
+
+    // check that mmap doesn't allow read/write mapping of a
+    // file opened read-only.
+    if ((fd = open(f, O_RDONLY)) == -1)
      2bc:	4581                	li	a1,0
      2be:	00001517          	auipc	a0,0x1
      2c2:	f1a50513          	addi	a0,a0,-230 # 11d8 <malloc+0x1d2>
@@ -356,8 +360,8 @@ mmap_test(void)
      2ce:	84aa                	mv	s1,a0
      2d0:	57fd                	li	a5,-1
      2d2:	34f50763          	beq	a0,a5,620 <mmap_test+0x4a0>
-    err("open");
-  p = mmap(0, PGSIZE*3, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+        err("open");
+    p = mmap(0, PGSIZE * 3, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
      2d6:	4781                	li	a5,0
      2d8:	872a                	mv	a4,a0
      2da:	4685                	li	a3,1
@@ -366,33 +370,33 @@ mmap_test(void)
      2e0:	4501                	li	a0,0
      2e2:	00001097          	auipc	ra,0x1
      2e6:	97e080e7          	jalr	-1666(ra) # c60 <mmap>
-  if (p != MAP_FAILED)
+    if (p != MAP_FAILED)
      2ea:	57fd                	li	a5,-1
      2ec:	34f51263          	bne	a0,a5,630 <mmap_test+0x4b0>
-    err("mmap call should have failed");
-  if (close(fd) == -1)
+        err("mmap call should have failed");
+    if (close(fd) == -1)
      2f0:	8526                	mv	a0,s1
      2f2:	00001097          	auipc	ra,0x1
      2f6:	8f6080e7          	jalr	-1802(ra) # be8 <close>
      2fa:	57fd                	li	a5,-1
      2fc:	34f50263          	beq	a0,a5,640 <mmap_test+0x4c0>
-    err("close");
+        err("close");
 
-  printf("test mmap read-only: OK\n");
+    printf("test mmap read-only: OK\n");
      300:	00001517          	auipc	a0,0x1
      304:	fb850513          	addi	a0,a0,-72 # 12b8 <malloc+0x2b2>
      308:	00001097          	auipc	ra,0x1
      30c:	c40080e7          	jalr	-960(ra) # f48 <printf>
-    
-  printf("test mmap read/write\n");
+
+    printf("test mmap read/write\n");
      310:	00001517          	auipc	a0,0x1
      314:	fc850513          	addi	a0,a0,-56 # 12d8 <malloc+0x2d2>
      318:	00001097          	auipc	ra,0x1
      31c:	c30080e7          	jalr	-976(ra) # f48 <printf>
-  
-  // check that mmap does allow read/write mapping of a
-  // file opened read/write.
-  if ((fd = open(f, O_RDWR)) == -1)
+
+    // check that mmap does allow read/write mapping of a
+    // file opened read/write.
+    if ((fd = open(f, O_RDWR)) == -1)
      320:	4589                	li	a1,2
      322:	00001517          	auipc	a0,0x1
      326:	eb650513          	addi	a0,a0,-330 # 11d8 <malloc+0x1d2>
@@ -401,8 +405,8 @@ mmap_test(void)
      332:	84aa                	mv	s1,a0
      334:	57fd                	li	a5,-1
      336:	30f50d63          	beq	a0,a5,650 <mmap_test+0x4d0>
-    err("open");
-  p = mmap(0, PGSIZE*3, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+        err("open");
+    p = mmap(0, PGSIZE * 3, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
      33a:	4781                	li	a5,0
      33c:	872a                	mv	a4,a0
      33e:	4685                	li	a3,1
@@ -412,61 +416,61 @@ mmap_test(void)
      346:	00001097          	auipc	ra,0x1
      34a:	91a080e7          	jalr	-1766(ra) # c60 <mmap>
      34e:	89aa                	mv	s3,a0
-  if (p == MAP_FAILED)
+    if (p == MAP_FAILED)
      350:	57fd                	li	a5,-1
      352:	30f50763          	beq	a0,a5,660 <mmap_test+0x4e0>
-    err("mmap (3)");
-  if (close(fd) == -1)
+        err("mmap (3)");
+    if (close(fd) == -1)
      356:	8526                	mv	a0,s1
      358:	00001097          	auipc	ra,0x1
      35c:	890080e7          	jalr	-1904(ra) # be8 <close>
      360:	57fd                	li	a5,-1
      362:	30f50763          	beq	a0,a5,670 <mmap_test+0x4f0>
-    err("close");
+        err("close");
 
-  // check that the mapping still works after close(fd).
-  _v1(p);
+    // check that the mapping still works after close(fd).
+    _v1(p);
      366:	854e                	mv	a0,s3
      368:	00000097          	auipc	ra,0x0
      36c:	cd6080e7          	jalr	-810(ra) # 3e <_v1>
 
-  // write the mapped memory.
-  for (i = 0; i < PGSIZE*2; i++)
+    // write the mapped memory.
+    for (i = 0; i < PGSIZE * 2; i++)
      370:	87ce                	mv	a5,s3
      372:	6709                	lui	a4,0x2
      374:	974e                	add	a4,a4,s3
-    p[i] = 'Z';
+        p[i] = 'Z';
      376:	05a00693          	li	a3,90
      37a:	00d78023          	sb	a3,0(a5)
-  for (i = 0; i < PGSIZE*2; i++)
+    for (i = 0; i < PGSIZE * 2; i++)
      37e:	0785                	addi	a5,a5,1
      380:	fee79de3          	bne	a5,a4,37a <mmap_test+0x1fa>
 
-  // unmap just the first two of three pages of mapped memory.
-  if (munmap(p, PGSIZE*2) == -1)
+    // unmap just the first two of three pages of mapped memory.
+    if (munmap(p, PGSIZE * 2) == -1)
      384:	6589                	lui	a1,0x2
      386:	854e                	mv	a0,s3
      388:	00001097          	auipc	ra,0x1
      38c:	8e0080e7          	jalr	-1824(ra) # c68 <munmap>
      390:	57fd                	li	a5,-1
      392:	2ef50763          	beq	a0,a5,680 <mmap_test+0x500>
-    err("munmap (3)");
-  
-  printf("test mmap read/write: OK\n");
+        err("munmap (3)");
+
+    printf("test mmap read/write: OK\n");
      396:	00001517          	auipc	a0,0x1
      39a:	f7a50513          	addi	a0,a0,-134 # 1310 <malloc+0x30a>
      39e:	00001097          	auipc	ra,0x1
      3a2:	baa080e7          	jalr	-1110(ra) # f48 <printf>
-  
-  printf("test mmap dirty\n");
+
+    printf("test mmap dirty\n");
      3a6:	00001517          	auipc	a0,0x1
      3aa:	f8a50513          	addi	a0,a0,-118 # 1330 <malloc+0x32a>
      3ae:	00001097          	auipc	ra,0x1
      3b2:	b9a080e7          	jalr	-1126(ra) # f48 <printf>
-  
-  // check that the writes to the mapped memory were
-  // written to the file.
-  if ((fd = open(f, O_RDWR)) == -1)
+
+    // check that the writes to the mapped memory were
+    // written to the file.
+    if ((fd = open(f, O_RDWR)) == -1)
      3b6:	4589                	li	a1,2
      3b8:	00001517          	auipc	a0,0x1
      3bc:	e2050513          	addi	a0,a0,-480 # 11d8 <malloc+0x1d2>
@@ -476,16 +480,16 @@ mmap_test(void)
      3ca:	57fd                	li	a5,-1
      3cc:	6489                	lui	s1,0x2
      3ce:	80048493          	addi	s1,s1,-2048 # 1800 <digits+0x258>
-    err("open");
-  for (i = 0; i < PGSIZE + (PGSIZE/2); i++){
-    char b;
-    if (read(fd, &b, 1) != 1)
-      err("read (1)");
-    if (b != 'Z')
+    for (i = 0; i < PGSIZE + (PGSIZE / 2); i++)
+    {
+        char b;
+        if (read(fd, &b, 1) != 1)
+            err("read (1)");
+        if (b != 'Z')
      3d2:	05a00a13          	li	s4,90
-  if ((fd = open(f, O_RDWR)) == -1)
+    if ((fd = open(f, O_RDWR)) == -1)
      3d6:	2af50d63          	beq	a0,a5,690 <mmap_test+0x510>
-    if (read(fd, &b, 1) != 1)
+        if (read(fd, &b, 1) != 1)
      3da:	4605                	li	a2,1
      3dc:	fcf40593          	addi	a1,s0,-49
      3e0:	854a                	mv	a0,s2
@@ -493,36 +497,36 @@ mmap_test(void)
      3e6:	7f6080e7          	jalr	2038(ra) # bd8 <read>
      3ea:	4785                	li	a5,1
      3ec:	2af51a63          	bne	a0,a5,6a0 <mmap_test+0x520>
-    if (b != 'Z')
+        if (b != 'Z')
      3f0:	fcf44783          	lbu	a5,-49(s0)
      3f4:	2b479e63          	bne	a5,s4,6b0 <mmap_test+0x530>
-  for (i = 0; i < PGSIZE + (PGSIZE/2); i++){
+    for (i = 0; i < PGSIZE + (PGSIZE / 2); i++)
      3f8:	34fd                	addiw	s1,s1,-1
      3fa:	f0e5                	bnez	s1,3da <mmap_test+0x25a>
-      err("file does not contain modifications");
-  }
-  if (close(fd) == -1)
+            err("file does not contain modifications");
+    }
+    if (close(fd) == -1)
      3fc:	854a                	mv	a0,s2
      3fe:	00000097          	auipc	ra,0x0
      402:	7ea080e7          	jalr	2026(ra) # be8 <close>
      406:	57fd                	li	a5,-1
      408:	2af50c63          	beq	a0,a5,6c0 <mmap_test+0x540>
-    err("close");
+        err("close");
 
-  printf("test mmap dirty: OK\n");
+    printf("test mmap dirty: OK\n");
      40c:	00001517          	auipc	a0,0x1
      410:	f7450513          	addi	a0,a0,-140 # 1380 <malloc+0x37a>
      414:	00001097          	auipc	ra,0x1
      418:	b34080e7          	jalr	-1228(ra) # f48 <printf>
 
-  printf("test not-mapped unmap\n");
+    printf("test not-mapped unmap\n");
      41c:	00001517          	auipc	a0,0x1
      420:	f7c50513          	addi	a0,a0,-132 # 1398 <malloc+0x392>
      424:	00001097          	auipc	ra,0x1
      428:	b24080e7          	jalr	-1244(ra) # f48 <printf>
-  
-  // unmap the rest of the mapped memory.
-  if (munmap(p+PGSIZE*2, PGSIZE) == -1)
+
+    // unmap the rest of the mapped memory.
+    if (munmap(p + PGSIZE * 2, PGSIZE) == -1)
      42c:	6585                	lui	a1,0x1
      42e:	6509                	lui	a0,0x2
      430:	954e                	add	a0,a0,s3
@@ -530,25 +534,25 @@ mmap_test(void)
      436:	836080e7          	jalr	-1994(ra) # c68 <munmap>
      43a:	57fd                	li	a5,-1
      43c:	28f50a63          	beq	a0,a5,6d0 <mmap_test+0x550>
-    err("munmap (4)");
+        err("munmap (4)");
 
-  printf("test not-mapped unmap: OK\n");
+    printf("test not-mapped unmap: OK\n");
      440:	00001517          	auipc	a0,0x1
      444:	f8050513          	addi	a0,a0,-128 # 13c0 <malloc+0x3ba>
      448:	00001097          	auipc	ra,0x1
      44c:	b00080e7          	jalr	-1280(ra) # f48 <printf>
-    
-  printf("test mmap two files\n");
+
+    printf("test mmap two files\n");
      450:	00001517          	auipc	a0,0x1
      454:	f9050513          	addi	a0,a0,-112 # 13e0 <malloc+0x3da>
      458:	00001097          	auipc	ra,0x1
      45c:	af0080e7          	jalr	-1296(ra) # f48 <printf>
-  
-  //
-  // mmap two files at the same time.
-  //
-  int fd1;
-  if((fd1 = open("mmap1", O_RDWR|O_CREATE)) < 0)
+
+    //
+    // mmap two files at the same time.
+    //
+    int fd1;
+    if ((fd1 = open("mmap1", O_RDWR | O_CREATE)) < 0)
      460:	20200593          	li	a1,514
      464:	00001517          	auipc	a0,0x1
      468:	f9450513          	addi	a0,a0,-108 # 13f8 <malloc+0x3f2>
@@ -556,8 +560,8 @@ mmap_test(void)
      470:	794080e7          	jalr	1940(ra) # c00 <open>
      474:	84aa                	mv	s1,a0
      476:	26054563          	bltz	a0,6e0 <mmap_test+0x560>
-    err("open mmap1");
-  if(write(fd1, "12345", 5) != 5)
+        err("open mmap1");
+    if (write(fd1, "12345", 5) != 5)
      47a:	4615                	li	a2,5
      47c:	00001597          	auipc	a1,0x1
      480:	f9458593          	addi	a1,a1,-108 # 1410 <malloc+0x40a>
@@ -565,8 +569,8 @@ mmap_test(void)
      488:	75c080e7          	jalr	1884(ra) # be0 <write>
      48c:	4795                	li	a5,5
      48e:	26f51163          	bne	a0,a5,6f0 <mmap_test+0x570>
-    err("write mmap1");
-  char *p1 = mmap(0, PGSIZE, PROT_READ, MAP_PRIVATE, fd1, 0);
+        err("write mmap1");
+    char *p1 = mmap(0, PGSIZE, PROT_READ, MAP_PRIVATE, fd1, 0);
      492:	4781                	li	a5,0
      494:	8726                	mv	a4,s1
      496:	4689                	li	a3,2
@@ -576,22 +580,22 @@ mmap_test(void)
      49e:	00000097          	auipc	ra,0x0
      4a2:	7c2080e7          	jalr	1986(ra) # c60 <mmap>
      4a6:	89aa                	mv	s3,a0
-  if(p1 == MAP_FAILED)
+    if (p1 == MAP_FAILED)
      4a8:	57fd                	li	a5,-1
      4aa:	24f50b63          	beq	a0,a5,700 <mmap_test+0x580>
-    err("mmap mmap1");
-  close(fd1);
+        err("mmap mmap1");
+    close(fd1);
      4ae:	8526                	mv	a0,s1
      4b0:	00000097          	auipc	ra,0x0
      4b4:	738080e7          	jalr	1848(ra) # be8 <close>
-  unlink("mmap1");
+    unlink("mmap1");
      4b8:	00001517          	auipc	a0,0x1
      4bc:	f4050513          	addi	a0,a0,-192 # 13f8 <malloc+0x3f2>
      4c0:	00000097          	auipc	ra,0x0
      4c4:	750080e7          	jalr	1872(ra) # c10 <unlink>
 
-  int fd2;
-  if((fd2 = open("mmap2", O_RDWR|O_CREATE)) < 0)
+    int fd2;
+    if ((fd2 = open("mmap2", O_RDWR | O_CREATE)) < 0)
      4c8:	20200593          	li	a1,514
      4cc:	00001517          	auipc	a0,0x1
      4d0:	f6c50513          	addi	a0,a0,-148 # 1438 <malloc+0x432>
@@ -599,8 +603,8 @@ mmap_test(void)
      4d8:	72c080e7          	jalr	1836(ra) # c00 <open>
      4dc:	892a                	mv	s2,a0
      4de:	22054963          	bltz	a0,710 <mmap_test+0x590>
-    err("open mmap2");
-  if(write(fd2, "67890", 5) != 5)
+        err("open mmap2");
+    if (write(fd2, "67890", 5) != 5)
      4e2:	4615                	li	a2,5
      4e4:	00001597          	auipc	a1,0x1
      4e8:	f6c58593          	addi	a1,a1,-148 # 1450 <malloc+0x44a>
@@ -608,8 +612,8 @@ mmap_test(void)
      4f0:	6f4080e7          	jalr	1780(ra) # be0 <write>
      4f4:	4795                	li	a5,5
      4f6:	22f51563          	bne	a0,a5,720 <mmap_test+0x5a0>
-    err("write mmap2");
-  char *p2 = mmap(0, PGSIZE, PROT_READ, MAP_PRIVATE, fd2, 0);
+        err("write mmap2");
+    char *p2 = mmap(0, PGSIZE, PROT_READ, MAP_PRIVATE, fd2, 0);
      4fa:	4781                	li	a5,0
      4fc:	874a                	mv	a4,s2
      4fe:	4689                	li	a3,2
@@ -619,21 +623,21 @@ mmap_test(void)
      506:	00000097          	auipc	ra,0x0
      50a:	75a080e7          	jalr	1882(ra) # c60 <mmap>
      50e:	84aa                	mv	s1,a0
-  if(p2 == MAP_FAILED)
+    if (p2 == MAP_FAILED)
      510:	57fd                	li	a5,-1
      512:	20f50f63          	beq	a0,a5,730 <mmap_test+0x5b0>
-    err("mmap mmap2");
-  close(fd2);
+        err("mmap mmap2");
+    close(fd2);
      516:	854a                	mv	a0,s2
      518:	00000097          	auipc	ra,0x0
      51c:	6d0080e7          	jalr	1744(ra) # be8 <close>
-  unlink("mmap2");
+    unlink("mmap2");
      520:	00001517          	auipc	a0,0x1
      524:	f1850513          	addi	a0,a0,-232 # 1438 <malloc+0x432>
      528:	00000097          	auipc	ra,0x0
      52c:	6e8080e7          	jalr	1768(ra) # c10 <unlink>
 
-  if(memcmp(p1, "12345", 5) != 0)
+    if (memcmp(p1, "12345", 5) != 0)
      530:	4615                	li	a2,5
      532:	00001597          	auipc	a1,0x1
      536:	ede58593          	addi	a1,a1,-290 # 1410 <malloc+0x40a>
@@ -641,8 +645,8 @@ mmap_test(void)
      53c:	00000097          	auipc	ra,0x0
      540:	62a080e7          	jalr	1578(ra) # b66 <memcmp>
      544:	1e051e63          	bnez	a0,740 <mmap_test+0x5c0>
-    err("mmap1 mismatch");
-  if(memcmp(p2, "67890", 5) != 0)
+        err("mmap1 mismatch");
+    if (memcmp(p2, "67890", 5) != 0)
      548:	4615                	li	a2,5
      54a:	00001597          	auipc	a1,0x1
      54e:	f0658593          	addi	a1,a1,-250 # 1450 <malloc+0x44a>
@@ -650,14 +654,14 @@ mmap_test(void)
      554:	00000097          	auipc	ra,0x0
      558:	612080e7          	jalr	1554(ra) # b66 <memcmp>
      55c:	1e051a63          	bnez	a0,750 <mmap_test+0x5d0>
-    err("mmap2 mismatch");
+        err("mmap2 mismatch");
 
-  munmap(p1, PGSIZE);
+    munmap(p1, PGSIZE);
      560:	6585                	lui	a1,0x1
      562:	854e                	mv	a0,s3
      564:	00000097          	auipc	ra,0x0
      568:	704080e7          	jalr	1796(ra) # c68 <munmap>
-  if(memcmp(p2, "67890", 5) != 0)
+    if (memcmp(p2, "67890", 5) != 0)
      56c:	4615                	li	a2,5
      56e:	00001597          	auipc	a1,0x1
      572:	ee258593          	addi	a1,a1,-286 # 1450 <malloc+0x44a>
@@ -665,20 +669,20 @@ mmap_test(void)
      578:	00000097          	auipc	ra,0x0
      57c:	5ee080e7          	jalr	1518(ra) # b66 <memcmp>
      580:	1e051063          	bnez	a0,760 <mmap_test+0x5e0>
-    err("mmap2 mismatch (2)");
-  munmap(p2, PGSIZE);
+        err("mmap2 mismatch (2)");
+    munmap(p2, PGSIZE);
      584:	6585                	lui	a1,0x1
      586:	8526                	mv	a0,s1
      588:	00000097          	auipc	ra,0x0
      58c:	6e0080e7          	jalr	1760(ra) # c68 <munmap>
-  
-  printf("test mmap two files: OK\n");
+
+    printf("test mmap two files: OK\n");
      590:	00001517          	auipc	a0,0x1
      594:	f2050513          	addi	a0,a0,-224 # 14b0 <malloc+0x4aa>
      598:	00001097          	auipc	ra,0x1
      59c:	9b0080e7          	jalr	-1616(ra) # f48 <printf>
-  
-  printf("mmap_test: ALL OK\n");
+
+    printf("mmap_test: ALL OK\n");
      5a0:	00001517          	auipc	a0,0x1
      5a4:	f3050513          	addi	a0,a0,-208 # 14d0 <malloc+0x4ca>
      5a8:	00001097          	auipc	ra,0x1
@@ -692,148 +696,148 @@ mmap_test(void)
      5ba:	6a42                	ld	s4,16(sp)
      5bc:	6121                	addi	sp,sp,64
      5be:	8082                	ret
-    err("open");
+        err("open");
      5c0:	00001517          	auipc	a0,0x1
      5c4:	bc850513          	addi	a0,a0,-1080 # 1188 <malloc+0x182>
      5c8:	00000097          	auipc	ra,0x0
      5cc:	a38080e7          	jalr	-1480(ra) # 0 <err>
-    err("mmap (1)");
+        err("mmap (1)");
      5d0:	00001517          	auipc	a0,0x1
      5d4:	c2850513          	addi	a0,a0,-984 # 11f8 <malloc+0x1f2>
      5d8:	00000097          	auipc	ra,0x0
      5dc:	a28080e7          	jalr	-1496(ra) # 0 <err>
-    err("munmap (1)");
+        err("munmap (1)");
      5e0:	00001517          	auipc	a0,0x1
      5e4:	c2850513          	addi	a0,a0,-984 # 1208 <malloc+0x202>
      5e8:	00000097          	auipc	ra,0x0
      5ec:	a18080e7          	jalr	-1512(ra) # 0 <err>
-    err("mmap (2)");
+        err("mmap (2)");
      5f0:	00001517          	auipc	a0,0x1
      5f4:	c5850513          	addi	a0,a0,-936 # 1248 <malloc+0x242>
      5f8:	00000097          	auipc	ra,0x0
      5fc:	a08080e7          	jalr	-1528(ra) # 0 <err>
-    err("close");
+        err("close");
      600:	00001517          	auipc	a0,0x1
      604:	ba850513          	addi	a0,a0,-1112 # 11a8 <malloc+0x1a2>
      608:	00000097          	auipc	ra,0x0
      60c:	9f8080e7          	jalr	-1544(ra) # 0 <err>
-    err("munmap (2)");
+        err("munmap (2)");
      610:	00001517          	auipc	a0,0x1
      614:	c4850513          	addi	a0,a0,-952 # 1258 <malloc+0x252>
      618:	00000097          	auipc	ra,0x0
      61c:	9e8080e7          	jalr	-1560(ra) # 0 <err>
-    err("open");
+        err("open");
      620:	00001517          	auipc	a0,0x1
      624:	b6850513          	addi	a0,a0,-1176 # 1188 <malloc+0x182>
      628:	00000097          	auipc	ra,0x0
      62c:	9d8080e7          	jalr	-1576(ra) # 0 <err>
-    err("mmap call should have failed");
+        err("mmap call should have failed");
      630:	00001517          	auipc	a0,0x1
      634:	c6850513          	addi	a0,a0,-920 # 1298 <malloc+0x292>
      638:	00000097          	auipc	ra,0x0
      63c:	9c8080e7          	jalr	-1592(ra) # 0 <err>
-    err("close");
+        err("close");
      640:	00001517          	auipc	a0,0x1
      644:	b6850513          	addi	a0,a0,-1176 # 11a8 <malloc+0x1a2>
      648:	00000097          	auipc	ra,0x0
      64c:	9b8080e7          	jalr	-1608(ra) # 0 <err>
-    err("open");
+        err("open");
      650:	00001517          	auipc	a0,0x1
      654:	b3850513          	addi	a0,a0,-1224 # 1188 <malloc+0x182>
      658:	00000097          	auipc	ra,0x0
      65c:	9a8080e7          	jalr	-1624(ra) # 0 <err>
-    err("mmap (3)");
+        err("mmap (3)");
      660:	00001517          	auipc	a0,0x1
      664:	c9050513          	addi	a0,a0,-880 # 12f0 <malloc+0x2ea>
      668:	00000097          	auipc	ra,0x0
      66c:	998080e7          	jalr	-1640(ra) # 0 <err>
-    err("close");
+        err("close");
      670:	00001517          	auipc	a0,0x1
      674:	b3850513          	addi	a0,a0,-1224 # 11a8 <malloc+0x1a2>
      678:	00000097          	auipc	ra,0x0
      67c:	988080e7          	jalr	-1656(ra) # 0 <err>
-    err("munmap (3)");
+        err("munmap (3)");
      680:	00001517          	auipc	a0,0x1
      684:	c8050513          	addi	a0,a0,-896 # 1300 <malloc+0x2fa>
      688:	00000097          	auipc	ra,0x0
      68c:	978080e7          	jalr	-1672(ra) # 0 <err>
-    err("open");
+        err("open");
      690:	00001517          	auipc	a0,0x1
      694:	af850513          	addi	a0,a0,-1288 # 1188 <malloc+0x182>
      698:	00000097          	auipc	ra,0x0
      69c:	968080e7          	jalr	-1688(ra) # 0 <err>
-      err("read (1)");
+            err("read (1)");
      6a0:	00001517          	auipc	a0,0x1
      6a4:	ca850513          	addi	a0,a0,-856 # 1348 <malloc+0x342>
      6a8:	00000097          	auipc	ra,0x0
      6ac:	958080e7          	jalr	-1704(ra) # 0 <err>
-      err("file does not contain modifications");
+            err("file does not contain modifications");
      6b0:	00001517          	auipc	a0,0x1
      6b4:	ca850513          	addi	a0,a0,-856 # 1358 <malloc+0x352>
      6b8:	00000097          	auipc	ra,0x0
      6bc:	948080e7          	jalr	-1720(ra) # 0 <err>
-    err("close");
+        err("close");
      6c0:	00001517          	auipc	a0,0x1
      6c4:	ae850513          	addi	a0,a0,-1304 # 11a8 <malloc+0x1a2>
      6c8:	00000097          	auipc	ra,0x0
      6cc:	938080e7          	jalr	-1736(ra) # 0 <err>
-    err("munmap (4)");
+        err("munmap (4)");
      6d0:	00001517          	auipc	a0,0x1
      6d4:	ce050513          	addi	a0,a0,-800 # 13b0 <malloc+0x3aa>
      6d8:	00000097          	auipc	ra,0x0
      6dc:	928080e7          	jalr	-1752(ra) # 0 <err>
-    err("open mmap1");
+        err("open mmap1");
      6e0:	00001517          	auipc	a0,0x1
      6e4:	d2050513          	addi	a0,a0,-736 # 1400 <malloc+0x3fa>
      6e8:	00000097          	auipc	ra,0x0
      6ec:	918080e7          	jalr	-1768(ra) # 0 <err>
-    err("write mmap1");
+        err("write mmap1");
      6f0:	00001517          	auipc	a0,0x1
      6f4:	d2850513          	addi	a0,a0,-728 # 1418 <malloc+0x412>
      6f8:	00000097          	auipc	ra,0x0
      6fc:	908080e7          	jalr	-1784(ra) # 0 <err>
-    err("mmap mmap1");
+        err("mmap mmap1");
      700:	00001517          	auipc	a0,0x1
      704:	d2850513          	addi	a0,a0,-728 # 1428 <malloc+0x422>
      708:	00000097          	auipc	ra,0x0
      70c:	8f8080e7          	jalr	-1800(ra) # 0 <err>
-    err("open mmap2");
+        err("open mmap2");
      710:	00001517          	auipc	a0,0x1
      714:	d3050513          	addi	a0,a0,-720 # 1440 <malloc+0x43a>
      718:	00000097          	auipc	ra,0x0
      71c:	8e8080e7          	jalr	-1816(ra) # 0 <err>
-    err("write mmap2");
+        err("write mmap2");
      720:	00001517          	auipc	a0,0x1
      724:	d3850513          	addi	a0,a0,-712 # 1458 <malloc+0x452>
      728:	00000097          	auipc	ra,0x0
      72c:	8d8080e7          	jalr	-1832(ra) # 0 <err>
-    err("mmap mmap2");
+        err("mmap mmap2");
      730:	00001517          	auipc	a0,0x1
      734:	d3850513          	addi	a0,a0,-712 # 1468 <malloc+0x462>
      738:	00000097          	auipc	ra,0x0
      73c:	8c8080e7          	jalr	-1848(ra) # 0 <err>
-    err("mmap1 mismatch");
+        err("mmap1 mismatch");
      740:	00001517          	auipc	a0,0x1
      744:	d3850513          	addi	a0,a0,-712 # 1478 <malloc+0x472>
      748:	00000097          	auipc	ra,0x0
      74c:	8b8080e7          	jalr	-1864(ra) # 0 <err>
-    err("mmap2 mismatch");
+        err("mmap2 mismatch");
      750:	00001517          	auipc	a0,0x1
      754:	d3850513          	addi	a0,a0,-712 # 1488 <malloc+0x482>
      758:	00000097          	auipc	ra,0x0
      75c:	8a8080e7          	jalr	-1880(ra) # 0 <err>
-    err("mmap2 mismatch (2)");
+        err("mmap2 mismatch (2)");
      760:	00001517          	auipc	a0,0x1
      764:	d3850513          	addi	a0,a0,-712 # 1498 <malloc+0x492>
      768:	00000097          	auipc	ra,0x0
      76c:	898080e7          	jalr	-1896(ra) # 0 <err>
 
 0000000000000770 <fork_test>:
+//
 // mmap a file, then fork.
 // check that the child sees the mapped file.
 //
-void
-fork_test(void)
+void fork_test(void)
 {
      770:	7179                	addi	sp,sp,-48
      772:	f406                	sd	ra,40(sp)
@@ -841,28 +845,28 @@ fork_test(void)
      776:	ec26                	sd	s1,24(sp)
      778:	e84a                	sd	s2,16(sp)
      77a:	1800                	addi	s0,sp,48
-  int fd;
-  int pid;
-  const char * const f = "mmap.dur";
-  
-  printf("fork_test starting\n");
+    int fd;
+    int pid;
+    const char *const f = "mmap.dur";
+
+    printf("fork_test starting\n");
      77c:	00001517          	auipc	a0,0x1
      780:	d6c50513          	addi	a0,a0,-660 # 14e8 <malloc+0x4e2>
      784:	00000097          	auipc	ra,0x0
      788:	7c4080e7          	jalr	1988(ra) # f48 <printf>
-  testname = "fork_test";
+    testname = "fork_test";
      78c:	00001797          	auipc	a5,0x1
      790:	d7478793          	addi	a5,a5,-652 # 1500 <malloc+0x4fa>
      794:	00002717          	auipc	a4,0x2
      798:	86f73623          	sd	a5,-1940(a4) # 2000 <testname>
-  
-  // mmap the file twice.
-  makefile(f);
+
+    // mmap the file twice.
+    makefile(f);
      79c:	00001517          	auipc	a0,0x1
      7a0:	a3c50513          	addi	a0,a0,-1476 # 11d8 <malloc+0x1d2>
      7a4:	00000097          	auipc	ra,0x0
      7a8:	922080e7          	jalr	-1758(ra) # c6 <makefile>
-  if ((fd = open(f, O_RDONLY)) == -1)
+    if ((fd = open(f, O_RDONLY)) == -1)
      7ac:	4581                	li	a1,0
      7ae:	00001517          	auipc	a0,0x1
      7b2:	a2a50513          	addi	a0,a0,-1494 # 11d8 <malloc+0x1d2>
@@ -871,13 +875,13 @@ fork_test(void)
      7be:	57fd                	li	a5,-1
      7c0:	0af50a63          	beq	a0,a5,874 <fork_test+0x104>
      7c4:	84aa                	mv	s1,a0
-    err("open");
-  unlink(f);
+        err("open");
+    unlink(f);
      7c6:	00001517          	auipc	a0,0x1
      7ca:	a1250513          	addi	a0,a0,-1518 # 11d8 <malloc+0x1d2>
      7ce:	00000097          	auipc	ra,0x0
      7d2:	442080e7          	jalr	1090(ra) # c10 <unlink>
-  char *p1 = mmap(0, PGSIZE*2, PROT_READ, MAP_SHARED, fd, 0);
+    char *p1 = mmap(0, PGSIZE * 2, PROT_READ, MAP_SHARED, fd, 0);
      7d6:	4781                	li	a5,0
      7d8:	8726                	mv	a4,s1
      7da:	4685                	li	a3,1
@@ -887,11 +891,11 @@ fork_test(void)
      7e2:	00000097          	auipc	ra,0x0
      7e6:	47e080e7          	jalr	1150(ra) # c60 <mmap>
      7ea:	892a                	mv	s2,a0
-  if (p1 == MAP_FAILED)
+    if (p1 == MAP_FAILED)
      7ec:	57fd                	li	a5,-1
      7ee:	08f50b63          	beq	a0,a5,884 <fork_test+0x114>
-    err("mmap (4)");
-  char *p2 = mmap(0, PGSIZE*2, PROT_READ, MAP_SHARED, fd, 0);
+        err("mmap (4)");
+    char *p2 = mmap(0, PGSIZE * 2, PROT_READ, MAP_SHARED, fd, 0);
      7f2:	4781                	li	a5,0
      7f4:	8726                	mv	a4,s1
      7f6:	4685                	li	a3,1
@@ -901,58 +905,58 @@ fork_test(void)
      7fe:	00000097          	auipc	ra,0x0
      802:	462080e7          	jalr	1122(ra) # c60 <mmap>
      806:	84aa                	mv	s1,a0
-  if (p2 == MAP_FAILED)
+    if (p2 == MAP_FAILED)
      808:	57fd                	li	a5,-1
      80a:	08f50563          	beq	a0,a5,894 <fork_test+0x124>
-    err("mmap (5)");
+        err("mmap (5)");
 
-  // read just 2nd page.
-  if(*(p1+PGSIZE) != 'A')
+    // read just 2nd page.
+    if (*(p1 + PGSIZE) != 'A')
      80e:	6785                	lui	a5,0x1
      810:	97ca                	add	a5,a5,s2
      812:	0007c703          	lbu	a4,0(a5) # 1000 <free+0x82>
      816:	04100793          	li	a5,65
      81a:	08f71563          	bne	a4,a5,8a4 <fork_test+0x134>
-    err("fork mismatch (1)");
+        err("fork mismatch (1)");
 
-  if((pid = fork()) < 0)
+    if ((pid = fork()) < 0)
      81e:	00000097          	auipc	ra,0x0
      822:	39a080e7          	jalr	922(ra) # bb8 <fork>
      826:	08054763          	bltz	a0,8b4 <fork_test+0x144>
-    err("fork");
-  if (pid == 0) {
+        err("fork");
+    if (pid == 0)
      82a:	cd49                	beqz	a0,8c4 <fork_test+0x154>
-    _v1(p1);
-    munmap(p1, PGSIZE); // just the first page
-    exit(0); // tell the parent that the mapping looks OK.
-  }
+        _v1(p1);
+        munmap(p1, PGSIZE); // just the first page
+        exit(0);            // tell the parent that the mapping looks OK.
+    }
 
-  int status = -1;
+    int status = -1;
      82c:	57fd                	li	a5,-1
      82e:	fcf42e23          	sw	a5,-36(s0)
-  wait(&status);
+    wait(&status);
      832:	fdc40513          	addi	a0,s0,-36
      836:	00000097          	auipc	ra,0x0
      83a:	392080e7          	jalr	914(ra) # bc8 <wait>
 
-  if(status != 0){
+    if (status != 0)
      83e:	fdc42783          	lw	a5,-36(s0)
      842:	e3cd                	bnez	a5,8e4 <fork_test+0x174>
-    printf("fork_test failed\n");
-    exit(1);
-  }
+        printf("fork_test failed\n");
+        exit(1);
+    }
 
-  // check that the parent's mappings are still there.
-  _v1(p1);
+    // check that the parent's mappings are still there.
+    _v1(p1);
      844:	854a                	mv	a0,s2
      846:	fffff097          	auipc	ra,0xfffff
      84a:	7f8080e7          	jalr	2040(ra) # 3e <_v1>
-  _v1(p2);
+    _v1(p2);
      84e:	8526                	mv	a0,s1
      850:	fffff097          	auipc	ra,0xfffff
      854:	7ee080e7          	jalr	2030(ra) # 3e <_v1>
 
-  printf("fork_test OK\n");
+    printf("fork_test OK\n");
      858:	00001517          	auipc	a0,0x1
      85c:	d1050513          	addi	a0,a0,-752 # 1568 <malloc+0x562>
      860:	00000097          	auipc	ra,0x0
@@ -964,50 +968,50 @@ fork_test(void)
      86e:	6942                	ld	s2,16(sp)
      870:	6145                	addi	sp,sp,48
      872:	8082                	ret
-    err("open");
+        err("open");
      874:	00001517          	auipc	a0,0x1
      878:	91450513          	addi	a0,a0,-1772 # 1188 <malloc+0x182>
      87c:	fffff097          	auipc	ra,0xfffff
      880:	784080e7          	jalr	1924(ra) # 0 <err>
-    err("mmap (4)");
+        err("mmap (4)");
      884:	00001517          	auipc	a0,0x1
      888:	c8c50513          	addi	a0,a0,-884 # 1510 <malloc+0x50a>
      88c:	fffff097          	auipc	ra,0xfffff
      890:	774080e7          	jalr	1908(ra) # 0 <err>
-    err("mmap (5)");
+        err("mmap (5)");
      894:	00001517          	auipc	a0,0x1
      898:	c8c50513          	addi	a0,a0,-884 # 1520 <malloc+0x51a>
      89c:	fffff097          	auipc	ra,0xfffff
      8a0:	764080e7          	jalr	1892(ra) # 0 <err>
-    err("fork mismatch (1)");
+        err("fork mismatch (1)");
      8a4:	00001517          	auipc	a0,0x1
      8a8:	c8c50513          	addi	a0,a0,-884 # 1530 <malloc+0x52a>
      8ac:	fffff097          	auipc	ra,0xfffff
      8b0:	754080e7          	jalr	1876(ra) # 0 <err>
-    err("fork");
+        err("fork");
      8b4:	00001517          	auipc	a0,0x1
      8b8:	c9450513          	addi	a0,a0,-876 # 1548 <malloc+0x542>
      8bc:	fffff097          	auipc	ra,0xfffff
      8c0:	744080e7          	jalr	1860(ra) # 0 <err>
-    _v1(p1);
+        _v1(p1);
      8c4:	854a                	mv	a0,s2
      8c6:	fffff097          	auipc	ra,0xfffff
      8ca:	778080e7          	jalr	1912(ra) # 3e <_v1>
-    munmap(p1, PGSIZE); // just the first page
+        munmap(p1, PGSIZE); // just the first page
      8ce:	6585                	lui	a1,0x1
      8d0:	854a                	mv	a0,s2
      8d2:	00000097          	auipc	ra,0x0
      8d6:	396080e7          	jalr	918(ra) # c68 <munmap>
-    exit(0); // tell the parent that the mapping looks OK.
+        exit(0);            // tell the parent that the mapping looks OK.
      8da:	4501                	li	a0,0
      8dc:	00000097          	auipc	ra,0x0
      8e0:	2e4080e7          	jalr	740(ra) # bc0 <exit>
-    printf("fork_test failed\n");
+        printf("fork_test failed\n");
      8e4:	00001517          	auipc	a0,0x1
      8e8:	c6c50513          	addi	a0,a0,-916 # 1550 <malloc+0x54a>
      8ec:	00000097          	auipc	ra,0x0
      8f0:	65c080e7          	jalr	1628(ra) # f48 <printf>
-    exit(1);
+        exit(1);
      8f4:	4505                	li	a0,1
      8f6:	00000097          	auipc	ra,0x0
      8fa:	2ca080e7          	jalr	714(ra) # bc0 <exit>
@@ -1018,18 +1022,18 @@ fork_test(void)
      900:	e406                	sd	ra,8(sp)
      902:	e022                	sd	s0,0(sp)
      904:	0800                	addi	s0,sp,16
-  mmap_test();
+    mmap_test();
      906:	00000097          	auipc	ra,0x0
      90a:	87a080e7          	jalr	-1926(ra) # 180 <mmap_test>
-  fork_test();
+    fork_test();
      90e:	00000097          	auipc	ra,0x0
      912:	e62080e7          	jalr	-414(ra) # 770 <fork_test>
-  printf("mmaptest: all tests succeeded\n");
+    printf("mmaptest: all tests succeeded\n");
      916:	00001517          	auipc	a0,0x1
      91a:	c6250513          	addi	a0,a0,-926 # 1578 <malloc+0x572>
      91e:	00000097          	auipc	ra,0x0
      922:	62a080e7          	jalr	1578(ra) # f48 <printf>
-  exit(0);
+    exit(0);
      926:	4501                	li	a0,0
      928:	00000097          	auipc	ra,0x0
      92c:	298080e7          	jalr	664(ra) # bc0 <exit>
