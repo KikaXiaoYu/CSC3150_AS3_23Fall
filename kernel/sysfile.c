@@ -272,26 +272,33 @@ sys_mmap(void)
     argfd(4, &fd, &pf);
     argint(5, &offset);
 
-    struct proc *p_proc = myproc(); // create a process struct pointer
+    struct proc *p_proc = myproc(); // create a pointer to process struct
 
-    struct vma *p_vma; // create a vma pointer
-    int vma_find = 0;
+    struct vma *p_vma; // create a vma pointer, which is used to get a vma
+    int vma_find = 0;  // 0 indicates not found, 1 otherwise
 
-    for (int i = VMASIZE - 1; i >= 0; i--)
+    for (int i = 0; i <= VMASIZE - 1; i++)
     {
         if (p_proc->vma[i].occupied != 1)
         {
-            p_vma = &p_proc->vma[i];
-            vma_find = 1;
-            break;
+            if (p_proc->sz + length <= MAXVA)
+            {
+                p_vma = &p_proc->vma[i];
+                vma_find = 1;
+                break;
+            }
         }
     }
 
     if (vma_find == 1)
-    {
-        printf("[Testing] : find\n");
-        p_vma->occupied = 1;
-        p_vma->addr_start = addr;
+    {                        // find the vma
+        p_vma->occupied = 1; // denote it is occupied
+        p_vma->start_addr = p_proc->sz - length;
+        // p_vma->start_addr = p_proc->sz;
+        p_vma->end_addr = p_proc->sz;
+        // p_vma->end_addr = p_proc->sz + length;
+        p_proc->sz -= length;
+        /* mmap arguments */
         p_vma->addr = addr;
         p_vma->length = length;
         p_vma->prot = prot;
@@ -300,13 +307,13 @@ sys_mmap(void)
         p_vma->offset = offset;
         p_vma->pf = pf;
 
-        filedup(pf);
+        /* add the page count reference */
+        filedup(p_vma->pf);
 
-        return (p_vma->addr_start - length);
+        return (p_vma->start_addr);
     }
     else
     {
-        printf("[Testing] : not find\n");
         panic("syscall mmap");
         return -1;
     }

@@ -72,9 +72,55 @@ void usertrap(void)
     // TODO: page fault handling
     else if (r_scause() == 13 || r_scause() == 15)
     {
-        // uint64 va = r_stval();
-        printf("Now, after mmap, we get a page fault\n");
-        goto err;
+        struct proc *p_proc = myproc();
+        uint64 va = PGROUNDDOWN(r_stval()); // get the address causing the exception
+        struct vma *p_vma;
+        int vma_find = 0; // 0 indicates not found, 1 otherwise
+
+        printf("[Testing] : va: %d\n", va);
+
+        for (int i = 0; i <= VMASIZE - 1; i++)
+        {
+            if (p_proc->vma[i].occupied == 1)
+            {
+                if (p_proc->vma[i].start_addr <= va && va <= p_proc->vma[i].end_addr)
+                {
+                    p_vma = &p_proc->vma[i];
+                    printf("[Testing] : Find it!\n");
+                    vma_find = 1;
+                    printf("[Testing] : %d\n", vma_find);
+                    break;
+                    // return;
+                }
+            }
+        }
+        if (vma_find == 1)
+        {
+            char *mem = (char *)kalloc();
+            if (mem == 0)
+            {
+                setkilled(p_proc);
+                return;
+            }
+            else
+            {
+                mapfile(p_vma->pf, mem, p_vma->offset);
+                // mapfile(p_vma->pf, mem, PGSIZE);
+                if ((mappages(p_proc->pagetable, va, PGSIZE, (uint64)mem, p_vma->prot | PTE_U | PTE_X)) == -1)
+                {
+                    setkilled(p_proc);
+                }
+                else {
+
+                }
+            }
+        }
+        else
+        {
+            setkilled(p_proc);
+            printf("Now, after mmap, we get a page fault\n");
+            goto err;
+        }
     }
     else
     {

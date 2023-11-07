@@ -99,7 +99,8 @@ struct vma
 {
     /* vma info */
     int occupied;   // denote whether occupied(1) or not(0)
-    int addr_start; // starting address of vma
+    int start_addr; // starting address of vma
+    int end_addr; // ending address of vma
     // struct file * p_file;
 
     /* fetched arguments */
