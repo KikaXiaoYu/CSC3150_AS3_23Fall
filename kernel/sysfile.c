@@ -256,21 +256,30 @@ uint64
 sys_mmap(void)
 {
     /* argument declaration */
-    uint64 addr; // arg0, kernel chooses virtual address
-    int length;  // arg1, indicates how many bytes to map
-    int prot;    // arg2, indicates the mapped memory mode
-    int flags;   // arg3, the flags of mapping
-    int fd;      // arg4, file description
-    int offset;  // arg5, the starting offset in the file
+    uint64 addr;   // arg0, kernel chooses virtual address
+    uint64 length; // arg1, indicates how many bytes to map
+    int prot;      // arg2, indicates the mapped memory mode
+    int flags;     // arg3, the flags of mapping
+    int fd;        // arg4, file description
+    uint64 offset; // arg5, the starting offset in the file
     /* other variables */
     struct file *pf; // a file pointer
     /* argument fetching */
     argaddr(0, &addr);
-    argint(1, &length);
+    argaddr(1, &length);
     argint(2, &prot);
     argint(3, &flags);
     argfd(4, &fd, &pf);
-    argint(5, &offset);
+    argaddr(5, &offset);
+    /* argument verification */
+    if ((prot & PROT_WRITE) && (flags & MAP_SHARED) && (!pf->writable))
+    {
+        return -1;
+    }
+    if ((prot & PROT_READ) && (!pf->readable))
+    {
+        return -1;
+    }
 
     struct proc *p_proc = myproc(); // create a pointer to process struct
 
@@ -293,13 +302,13 @@ sys_mmap(void)
     if (vma_find == 1)
     {                        // find the vma
         p_vma->occupied = 1; // denote it is occupied
-        p_vma->start_addr = p_proc->sz - length;
-        // p_vma->start_addr = p_proc->sz;
-        p_vma->end_addr = p_proc->sz;
-        // p_vma->end_addr = p_proc->sz + length;
-        p_proc->sz -= length;
+        p_vma->start_addr = (uint64)(p_proc->sz);
+        // printf("[Testing] (sys_mmap) : find vma : start : %d \n", p_vma->start_addr);
+        p_vma->end_addr = (uint64)(p_proc->sz + length);
+        // printf("[Testing] (sys_mmap) : find vma : end : %d\n", p_vma->end_addr);
+        // p_proc->sz += length;
         /* mmap arguments */
-        p_vma->addr = addr;
+        p_vma->addr = (uint64)addr;
         p_vma->length = length;
         p_vma->prot = prot;
         p_vma->flags = flags;
@@ -308,8 +317,9 @@ sys_mmap(void)
         p_vma->pf = pf;
 
         /* add the page count reference */
+        // printf("[Testing] (sys_mmap) : Go to filedup!\n");
         filedup(p_vma->pf);
-
+        // printf("[Testing] (sys_mmap) : I want to return !\n");
         return (p_vma->start_addr);
     }
     else

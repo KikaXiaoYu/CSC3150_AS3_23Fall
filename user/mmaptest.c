@@ -33,11 +33,17 @@ void err(char *why)
 //
 void _v1(char *p)
 {
+    // printf("[Testing] (_v1) : start _v1\n");
+    // printf("[Testing] (_v1) : check p : %d\n", p);
+    // printf("[Testing] (_v1) : p len : %d\n", sizeof(p));
+    // printf("[Testing] (_v1) : check finished\n");
     int i;
     for (i = 0; i < PGSIZE * 2; i++)
     {
+        // printf("[Testing] (_v1) : i= %d, con = %c\n", i, p[i]);
         if (i < PGSIZE + (PGSIZE / 2))
         {
+            // printf("[Testing] (_v1) : print p[i] %d\n", p[i]);
             if (p[i] != 'A')
             {
                 printf("mismatch at %d, wanted 'A', got 0x%x\n", i, p[i]);
@@ -113,10 +119,13 @@ void mmap_test(void)
     // offset in the file.
     //
     char *p = mmap(0, PGSIZE * 2, PROT_READ, MAP_PRIVATE, fd, 0);
+    // printf("[Testing] (mmaptest) : mmap output! \n");
+
     if (p == MAP_FAILED)
         err("mmap (1)");
+    // printf("[Testing] (mmaptest) : before _v1(p) \n");
     _v1(p);
-    printf("[Testing] : mmap! good \n");
+    // printf("[Testing] (mmaptest) : mmap! good \n");
     if (munmap(p, PGSIZE * 2) == -1)
         err("munmap (1)");
 
