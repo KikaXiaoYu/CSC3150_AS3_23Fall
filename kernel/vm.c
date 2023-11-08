@@ -148,34 +148,26 @@ int mappages(pagetable_t pagetable, uint64 va, uint64 size, uint64 pa, int perm)
     if (size == 0)
         panic("mappages: size");
 
-    // printf("[Testing] : size OK\n");
     a = PGROUNDDOWN(va);
     last = PGROUNDDOWN(va + size - 1);
     for (;;)
     {
-        // printf("[Testing] : start loop\n");
         if ((pte = walk(pagetable, a, 1)) == 0)
         {
-            // printf("[Testing] : walk = 0\n");
             return -1;
         }
         if (*pte & PTE_V)
         {
-            printf("[Testing] : pte: %d\n", pte);
-            printf("[Testing] : PTE_V: %d\n", PTE_V);
             panic("mappages: remap");
         }
-        // printf("[Testing] : out! pte: %d\n", pte);
 
         *pte = PA2PTE(pa) | perm | PTE_V;
 
-        // printf("[Testing] : new! pte: %d\n", pte);
         if (a == last)
             break;
         a += PGSIZE;
         pa += PGSIZE;
     }
-    // printf("[Testing] : return 0\n");
     return 0;
 }
 

@@ -241,13 +241,9 @@ void mmap_test(void)
     unlink("mmap2");
 
     if (memcmp(p1, "12345", 5) != 0)
-    {
         err("mmap1 mismatch");
-    }
     if (memcmp(p2, "67890", 5) != 0)
-    {
         err("mmap2 mismatch");
-    }
 
     munmap(p1, PGSIZE);
     if (memcmp(p2, "67890", 5) != 0)
@@ -285,17 +281,11 @@ void fork_test(void)
         err("mmap (5)");
 
     // read just 2nd page.
-    printf("[Testing] (fork_test) : read just 2nd page.\n");
     if (*(p1 + PGSIZE) != 'A')
         err("fork mismatch (1)");
-    printf("[Testing] (fork_test) : read just 2nd page finished.\n");
-    printf("[Testing] (fork_test) : fork starts.\n");
+
     if ((pid = fork()) < 0)
-    {
-        printf("[Testing] (fork_test) : fork error.\n");
         err("fork");
-    }
-    printf("[Testing] (fork_test) : fork finishes.\n");
     if (pid == 0)
     {
         _v1(p1);

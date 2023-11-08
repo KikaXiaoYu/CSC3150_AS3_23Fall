@@ -110,11 +110,8 @@ void mapfile(struct file *f, char *mem, int offset)
 {
     printf("off %d\n", offset);
     ilock(f->ip);
-    // printf("[Testing] (mapfile) : finish ilock\n");
     readi(f->ip, 0, (uint64)mem, offset, PGSIZE);
-    // printf("[Testing] (mapfile) : finish readi\n");
     iunlock(f->ip);
-    // printf("[Testing] (mapfile) : finish iunlock\n");
 }
 
 // Read from file f.

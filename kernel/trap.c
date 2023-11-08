@@ -72,66 +72,51 @@ void usertrap(void)
     // TODO: page fault handling
     else if (r_scause() == 13 || r_scause() == 15)
     {
-        // printf("\n[Testing] (trap) : start trap!\n");
         struct proc *p_proc = myproc();
         uint64 va = r_stval(); // get the address causing the exception
         struct vma *p_vma;
         int vma_find = 0; // 0 indicates not found, 1 otherwise
 
-        printf("[Testing] (trap) : va: %d\n", va);
-
         for (int i = 0; i <= VMASIZE - 1; i++)
         {
             if (p_proc->vma[i].occupied == 1)
-            {
+            { // the vma is used
                 if (p_proc->vma[i].start_addr <= va && va <= p_proc->vma[i].end_addr)
-                {
+                { // the exception address is in between the vma
                     p_vma = &p_proc->vma[i];
-                    printf("[Testing] (trap) : Find it!\n");
-                    // printf("[Testing] (trap) : p->sz: %d\n", p_proc->sz);
                     vma_find = 1;
-                    printf("[Testing] (trap) : %d, %d -> %d\n", i, p_proc->vma[i].start_addr, p_proc->vma[i].end_addr);
                     break;
-                    // return;
                 }
             }
         }
-        if (vma_find == 1)
+        if (vma_find == 1) // find the vma
         {
-            char *mem = (char *)kalloc();
+            char *mem = (char *)kalloc(); // find spare space
             if (mem == 0)
-            {
-                // printf("[Testing] (trap) : not enough mem\n");
+            { // memory is not enough
                 setkilled(p_proc);
-                return;
             }
             else
             {
+                /* set the memory to 0 with size PGSIZE */
                 memset(mem, 0, PGSIZE);
-
-                // printf("[Testing] (trap) : before mappages\n");
-                printf("[Testing] (trap) : map off: %d\n", va - p_vma->start_addr);
+                /* map one page of the file with corrs vma */
                 mapfile(p_vma->pf, mem, va - p_vma->start_addr);
-                // mapfile(p_vma->pf, mem, PGSIZE);
-                if (mappages(p_proc->pagetable, va, PGSIZE, (uint64)mem, (p_vma->prot | PTE_R | PTE_X | PTE_W | PTE_U)) == -1)
-                {
-                    // printf("[Testing] (trap) : mappages failed!\n");
+                /* set the flags for mappages, we use all the flags in order to use freely */
+                int flags = (p_vma->prot | PTE_R | PTE_X | PTE_W | PTE_U);
+
+                if (mappages(p_proc->pagetable, va, PGSIZE, (uint64)mem, flags) == -1)
+                { // mappages failed
                     setkilled(p_proc);
                 }
                 else
                 {
-                    // printf("[Testing] (trap) : mappages successfully!\n");
-                    // printf("[Testing] (trap) : before mapfile\n");
-                    // printf("[Testing] (trap) : va: %d\n", va);
-                    // printf("[Testing] (trap) : offset: %d\n", va - p_vma->start_addr);
-                    // mapfile(p_vma->pf, mem, p_vma->offset + va - p_vma->start_addr);
-                    // printf("[Testing] (trap) : mapfile good!\n");
+                    // successfully map the pages, do nothing
                 }
             }
         }
         else
-        {
-            // setkilled(p_proc);
+        { // cannot find suitable vma
             printf("Now, after mmap, we get a page fault\n");
             goto err;
         }

@@ -262,8 +262,10 @@ sys_mmap(void)
     int flags;     // arg3, the flags of mapping
     int fd;        // arg4, file description
     uint64 offset; // arg5, the starting offset in the file
+
     /* other variables */
     struct file *pf; // a file pointer
+
     /* argument fetching */
     argaddr(0, &addr);
     argaddr(1, &length);
@@ -271,61 +273,56 @@ sys_mmap(void)
     argint(3, &flags);
     argfd(4, &fd, &pf);
     argaddr(5, &offset);
+
     /* argument verification */
     if ((prot & PROT_WRITE) && (flags & MAP_SHARED) && (!pf->writable))
-    {
-        printf("[Testing] (sys_mmap) : not writable but write and map shared\n");
+    { // not writable but write and map shared
         return -1;
     }
     if ((prot & PROT_READ) && (!pf->readable))
-    {
-        printf("[Testing] (sys_mmap) : not readable but read\n");
+    { // not readable but read
         return -1;
     }
 
-    struct proc *p_proc = myproc(); // create a pointer to process struct
+    struct proc *p_proc = myproc(); // create a pt pointing to process struct
 
     struct vma *p_vma; // create a vma pointer, which is used to get a vma
     int vma_find = 0;  // 0 indicates not found, 1 otherwise
 
     for (int i = 0; i <= VMASIZE - 1; i++)
     {
-        if (p_proc->vma[i].occupied != 1)
+        if (p_proc->vma[i].occupied != 1) // not used
         {
-            if (p_proc->sz + length <= MAXVA)
+            if (p_proc->sz + length <= MAXVA) // still enough space in process
             {
                 p_vma = &p_proc->vma[i];
-                vma_find = 1;
-                printf("[Testing] (sys_mmap) : find vma : %d \n", i);
+                vma_find = 1; // denoting vma found
                 break;
             }
         }
     }
 
-    if (vma_find == 1)
-    {                        // find the vma
-        p_vma->occupied = 1; // denote it is occupied
-        p_vma->start_addr = (uint64)(p_proc->sz);
-        printf("[Testing] (sys_mmap) : find vma : start : %d \n", p_vma->start_addr);
-        p_vma->end_addr = (uint64)(p_proc->sz + length - 1);
-        printf("[Testing] (sys_mmap) : find vma : end : %d\n", p_vma->end_addr);
-        p_proc->sz += length;
-        /* mmap arguments */
-        p_vma->addr = (uint64)addr;
-        p_vma->length = length;
-        p_vma->prot = prot;
-        p_vma->flags = flags;
+    if (vma_find == 1) // find the vma
+    {
+        p_vma->occupied = 1;                                 // denote it is occupied
+        p_vma->start_addr = (uint64)(p_proc->sz);            // get start address
+        p_vma->end_addr = (uint64)(p_proc->sz + length - 1); // get end addrerss
+        p_proc->sz += (uint64)(length);                      // increase sz, for other vmas
+
+        /* mmap function arguments to vma */
+        p_vma->addr = (uint64)(addr);
+        p_vma->length = (uint64)(length);
+        p_vma->prot = (int)(prot);
+        p_vma->flags = (int)(flags);
         p_vma->fd = fd;
-        p_vma->offset = offset;
+        p_vma->offset = (uint64)(offset);
         p_vma->pf = pf;
 
         /* add the page count reference */
-        // printf("[Testing] (sys_mmap) : Go to filedup!\n");
         filedup(p_vma->pf);
-        // printf("[Testing] (sys_mmap) : I want to return !\n");
-        return (p_vma->start_addr);
+        return (uint64)(p_vma->start_addr);
     }
-    else
+    else // did not find suitable vma
     {
         panic("syscall mmap");
         return -1;
@@ -337,19 +334,20 @@ uint64
 sys_munmap(void)
 {
     /* argument declaration */
-    uint64 addr;   // arg0, return p of mmap
+    uint64 addr;   // arg0, the return p of mmap
     uint64 length; // arg1, indicates how many bytes to map
-    /* other variables */
+
     /* argument fetching */
     argaddr(0, &addr);
     argaddr(1, &length);
+
     /* argument verification */
     if (addr < 0 || length < 0)
     {
         return -1;
     }
 
-    struct proc *p_proc = myproc(); // create a pointer to process struct
+    struct proc *p_proc = myproc(); // create a pt pointing to process struct
 
     struct vma *p_vma; // create a vma pointer, which is used to get a vma
     int vma_find = 0;  // 0 indicates not found, 1 otherwise
@@ -357,9 +355,7 @@ sys_munmap(void)
     for (int i = 0; i <= VMASIZE - 1; i++)
     {
         if ((p_proc->vma[i].start_addr <= addr) && (addr <= p_proc->vma[i].end_addr))
-        {
-            printf("[Testing] (sys_munmap): find vma %d\n", i);
-            printf("[Testing] (sys_munmap): vma start address %d\n", p_proc->vma[i].start_addr);
+        { // the address is in between the vma
             p_vma = &p_proc->vma[i];
             vma_find = 1;
             break;
@@ -368,30 +364,24 @@ sys_munmap(void)
 
     if (vma_find == 1)
     { // find the vma
-      // if (walkaddr(p_proc->pagetable, p_vma->start_addr) != 0)
-      // {
         if ((p_vma->flags & MAP_SHARED) != 0)
-        {
+        { // write back if the map is shared
             filewrite(p_vma->pf, p_vma->start_addr, length);
         }
-        printf("[Testing] (sys_munmap) : start: %d\n", p_vma->start_addr);
-        printf("[Testing] (sys_munmap) : length: %d\n", length);
+        /* unmap the region in the process */
         uvmunmap(p_proc->pagetable, p_vma->start_addr, length / PGSIZE, 1);
+        /* update the starting address since some of its head has been "removed" */
         p_vma->start_addr += length;
+        /* close the file and free the vma if all the space of vma is unmaped */
         if (p_vma->start_addr == p_vma->end_addr)
         {
-            printf("[Testing] (sys_munmap) : whole vma closed\n");
-            p_vma->occupied = 0;
-            fileclose(p_vma->pf);
-
+            p_vma->occupied = 0;  // denoting unused for further usage
+            fileclose(p_vma->pf); // close the file
             return 0;
         }
         return 0;
-        // }
-        printf("[Testing] (sys_munmap) : walk not good!\n");
-        return 0;
     }
-    else
+    else // did not find the vma
     {
         return -1;
     }
