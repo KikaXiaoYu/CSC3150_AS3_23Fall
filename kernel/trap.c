@@ -87,10 +87,10 @@ void usertrap(void)
                 if (p_proc->vma[i].start_addr <= va && va <= p_proc->vma[i].end_addr)
                 {
                     p_vma = &p_proc->vma[i];
-                    // printf("[Testing] (trap) : Find it!\n");
+                    printf("[Testing] (trap) : Find it!\n");
                     // printf("[Testing] (trap) : p->sz: %d\n", p_proc->sz);
                     vma_find = 1;
-                    // printf("[Testing] (trap) : %d, %d -> %d\n", i, p_proc->vma[i].start_addr, p_proc->vma[i].end_addr);
+                    printf("[Testing] (trap) : %d, %d -> %d\n", i, p_proc->vma[i].start_addr, p_proc->vma[i].end_addr);
                     break;
                     // return;
                 }
@@ -110,6 +110,7 @@ void usertrap(void)
                 memset(mem, 0, PGSIZE);
 
                 // printf("[Testing] (trap) : before mappages\n");
+                printf("[Testing] (trap) : map off: %d\n", va - p_vma->start_addr);
                 mapfile(p_vma->pf, mem, va - p_vma->start_addr);
                 // mapfile(p_vma->pf, mem, PGSIZE);
                 if (mappages(p_proc->pagetable, va, PGSIZE, (uint64)mem, (p_vma->prot | PTE_R | PTE_X | PTE_W | PTE_U)) == -1)

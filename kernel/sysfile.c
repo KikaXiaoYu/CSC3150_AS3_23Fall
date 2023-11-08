@@ -307,7 +307,7 @@ sys_mmap(void)
         p_vma->occupied = 1; // denote it is occupied
         p_vma->start_addr = (uint64)(p_proc->sz);
         printf("[Testing] (sys_mmap) : find vma : start : %d \n", p_vma->start_addr);
-        p_vma->end_addr = (uint64)(p_proc->sz + length);
+        p_vma->end_addr = (uint64)(p_proc->sz + length - 1);
         printf("[Testing] (sys_mmap) : find vma : end : %d\n", p_vma->end_addr);
         p_proc->sz += length;
         /* mmap arguments */
