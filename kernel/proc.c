@@ -304,6 +304,25 @@ int fork(void)
     }
     np->sz = p->sz;
 
+    /* copy the process information to the new process */
+    struct vma *p_new_vma;
+    struct vma *p_odd_vma;
+    for (int i = VMASIZE - 1; i >= 0; i--)
+    {
+        p_new_vma = &np->vma[i];
+        p_odd_vma = &p->vma[i];
+        p_new_vma->occupied = p_odd_vma->occupied;
+        p_new_vma->start_addr = p_odd_vma->start_addr;
+        p_new_vma->end_addr = p_odd_vma->end_addr;
+        p_new_vma->addr = p_odd_vma->addr;
+        p_new_vma->length = p_odd_vma->length;
+        p_new_vma->prot = p_odd_vma->prot;
+        p_new_vma->flags = p_odd_vma->flags;
+        p_new_vma->fd = p_odd_vma->fd;
+        p_new_vma->offset = p_odd_vma->offset;
+        p_new_vma->pf = p_odd_vma->pf;
+    }
+
     // copy saved user registers.
     *(np->trapframe) = *(p->trapframe);
 

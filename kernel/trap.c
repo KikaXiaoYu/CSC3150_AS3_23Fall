@@ -78,7 +78,7 @@ void usertrap(void)
         struct vma *p_vma;
         int vma_find = 0; // 0 indicates not found, 1 otherwise
 
-        // printf("[Testing] (trap) : va: %d\n", va);
+        printf("[Testing] (trap) : va: %d\n", va);
 
         for (int i = 0; i <= VMASIZE - 1; i++)
         {
