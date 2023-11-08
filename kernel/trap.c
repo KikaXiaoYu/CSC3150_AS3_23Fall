@@ -101,7 +101,7 @@ void usertrap(void)
             char *mem = (char *)kalloc();
             if (mem == 0)
             {
-                printf("[Testing] (trap) : not enough mem\n");
+                // printf("[Testing] (trap) : not enough mem\n");
                 setkilled(p_proc);
                 return;
             }
@@ -110,27 +110,27 @@ void usertrap(void)
                 memset(mem, 0, PGSIZE);
 
                 // printf("[Testing] (trap) : before mappages\n");
-                // mapfile(p_vma->pf, mem, p_vma->offset + va - p_vma->addr);
+                mapfile(p_vma->pf, mem, va - p_vma->start_addr);
                 // mapfile(p_vma->pf, mem, PGSIZE);
                 if (mappages(p_proc->pagetable, va, PGSIZE, (uint64)mem, (p_vma->prot | PTE_R | PTE_X | PTE_W | PTE_U)) == -1)
                 {
-                    printf("[Testing] (trap) : mappages failed!\n");
+                    // printf("[Testing] (trap) : mappages failed!\n");
                     setkilled(p_proc);
                 }
                 else
                 {
-                    printf("[Testing] (trap) : mappages successfully!\n");
+                    // printf("[Testing] (trap) : mappages successfully!\n");
                     // printf("[Testing] (trap) : before mapfile\n");
                     // printf("[Testing] (trap) : va: %d\n", va);
                     // printf("[Testing] (trap) : offset: %d\n", va - p_vma->start_addr);
-                    mapfile(p_vma->pf, mem, p_vma->offset + va - p_vma->start_addr);
-                    printf("[Testing] (trap) : mapfile good!\n");
+                    // mapfile(p_vma->pf, mem, p_vma->offset + va - p_vma->start_addr);
+                    // printf("[Testing] (trap) : mapfile good!\n");
                 }
             }
         }
         else
         {
-            setkilled(p_proc);
+            // setkilled(p_proc);
             printf("Now, after mmap, we get a page fault\n");
             goto err;
         }

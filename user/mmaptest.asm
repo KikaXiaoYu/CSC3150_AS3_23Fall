@@ -644,6 +644,7 @@ void mmap_test(void)
      528:	00000097          	auipc	ra,0x0
      52c:	6e8080e7          	jalr	1768(ra) # c10 <unlink>
 
+    // printf("[Testing] (mmaptest) : p1: %s.\n", p1);
     if (memcmp(p1, "12345", 5) != 0)
      530:	4615                	li	a2,5
      532:	00001597          	auipc	a1,0x1
@@ -652,7 +653,10 @@ void mmap_test(void)
      53c:	00000097          	auipc	ra,0x0
      540:	62a080e7          	jalr	1578(ra) # b66 <memcmp>
      544:	1e051e63          	bnez	a0,740 <mmap_test+0x5c0>
+    {
         err("mmap1 mismatch");
+    }
+    // printf("[Testing] (mmaptest) : p2: %s.\n", p2);
     if (memcmp(p2, "67890", 5) != 0)
      548:	4615                	li	a2,5
      54a:	00001597          	auipc	a1,0x1
@@ -661,7 +665,9 @@ void mmap_test(void)
      554:	00000097          	auipc	ra,0x0
      558:	612080e7          	jalr	1554(ra) # b66 <memcmp>
      55c:	1e051a63          	bnez	a0,750 <mmap_test+0x5d0>
+    {
         err("mmap2 mismatch");
+    }
 
     munmap(p1, PGSIZE);
      560:	6585                	lui	a1,0x1

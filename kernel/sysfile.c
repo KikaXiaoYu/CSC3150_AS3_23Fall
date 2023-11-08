@@ -274,10 +274,12 @@ sys_mmap(void)
     /* argument verification */
     if ((prot & PROT_WRITE) && (flags & MAP_SHARED) && (!pf->writable))
     {
+        printf("[Testing] (sys_mmap) : not writable but write and map shared\n");
         return -1;
     }
     if ((prot & PROT_READ) && (!pf->readable))
     {
+        printf("[Testing] (sys_mmap) : not readable but read\n");
         return -1;
     }
 
@@ -294,6 +296,7 @@ sys_mmap(void)
             {
                 p_vma = &p_proc->vma[i];
                 vma_find = 1;
+                printf("[Testing] (sys_mmap) : find vma : %d \n", i);
                 break;
             }
         }
@@ -303,10 +306,10 @@ sys_mmap(void)
     {                        // find the vma
         p_vma->occupied = 1; // denote it is occupied
         p_vma->start_addr = (uint64)(p_proc->sz);
-        // printf("[Testing] (sys_mmap) : find vma : start : %d \n", p_vma->start_addr);
+        printf("[Testing] (sys_mmap) : find vma : start : %d \n", p_vma->start_addr);
         p_vma->end_addr = (uint64)(p_proc->sz + length);
-        // printf("[Testing] (sys_mmap) : find vma : end : %d\n", p_vma->end_addr);
-        // p_proc->sz += length;
+        printf("[Testing] (sys_mmap) : find vma : end : %d\n", p_vma->end_addr);
+        p_proc->sz += length;
         /* mmap arguments */
         p_vma->addr = (uint64)addr;
         p_vma->length = length;
@@ -333,7 +336,65 @@ sys_mmap(void)
 uint64
 sys_munmap(void)
 {
-    return 0;
+    /* argument declaration */
+    uint64 addr;   // arg0, return p of mmap
+    uint64 length; // arg1, indicates how many bytes to map
+    /* other variables */
+    /* argument fetching */
+    argaddr(0, &addr);
+    argaddr(1, &length);
+    /* argument verification */
+    if (addr < 0 || length < 0)
+    {
+        return -1;
+    }
+
+    struct proc *p_proc = myproc(); // create a pointer to process struct
+
+    struct vma *p_vma; // create a vma pointer, which is used to get a vma
+    int vma_find = 0;  // 0 indicates not found, 1 otherwise
+
+    for (int i = 0; i <= VMASIZE - 1; i++)
+    {
+        if ((p_proc->vma[i].start_addr <= addr) && (addr <= p_proc->vma[i].end_addr))
+        {
+            printf("[Testing] (sys_munmap): find vma %d\n", i);
+            printf("[Testing] (sys_munmap): vma start address %d\n", p_proc->vma[i].start_addr);
+            p_vma = &p_proc->vma[i];
+            vma_find = 1;
+            break;
+        }
+    }
+
+    if (vma_find == 1)
+    { // find the vma
+      // if (walkaddr(p_proc->pagetable, p_vma->start_addr) != 0)
+      // {
+        if ((p_vma->flags & MAP_SHARED) != 0)
+        {
+            filewrite(p_vma->pf, p_vma->start_addr, length);
+        }
+        printf("[Testing] (sys_munmap) : start: %d\n", p_vma->start_addr);
+        printf("[Testing] (sys_munmap) : length: %d\n", length);
+        uvmunmap(p_proc->pagetable, p_vma->start_addr, length / PGSIZE, 1);
+        p_vma->start_addr += length;
+        if (p_vma->start_addr == p_vma->end_addr)
+        {
+            printf("[Testing] (sys_munmap) : whole vma closed\n");
+            p_vma->occupied = 0;
+            fileclose(p_vma->pf);
+
+            return 0;
+        }
+        return 0;
+        // }
+        printf("[Testing] (sys_munmap) : walk not good!\n");
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 static struct inode *

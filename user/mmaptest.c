@@ -240,10 +240,16 @@ void mmap_test(void)
     close(fd2);
     unlink("mmap2");
 
+    // printf("[Testing] (mmaptest) : p1: %s.\n", p1);
     if (memcmp(p1, "12345", 5) != 0)
+    {
         err("mmap1 mismatch");
+    }
+    // printf("[Testing] (mmaptest) : p2: %s.\n", p2);
     if (memcmp(p2, "67890", 5) != 0)
+    {
         err("mmap2 mismatch");
+    }
 
     munmap(p1, PGSIZE);
     if (memcmp(p2, "67890", 5) != 0)
