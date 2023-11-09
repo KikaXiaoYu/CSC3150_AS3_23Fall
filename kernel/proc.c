@@ -309,6 +309,7 @@ int fork(void)
     struct vma *p_odd_vma;
     for (int i = VMASIZE - 1; i >= 0; i--)
     {
+        /* copy the vmas' information */
         p_new_vma = &np->vma[i];
         p_odd_vma = &p->vma[i];
         p_new_vma->occupied = p_odd_vma->occupied;
@@ -321,6 +322,11 @@ int fork(void)
         p_new_vma->fd = p_odd_vma->fd;
         p_new_vma->offset = p_odd_vma->offset;
         p_new_vma->pf = p_odd_vma->pf;
+        /* increment the reference count for vma's struct file */
+        if (p_odd_vma->fd != 0)
+        {
+            filedup(p_odd_vma->pf);
+        }
     }
 
     // copy saved user registers.
